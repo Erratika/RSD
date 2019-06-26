@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: "RSD"
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    restart: always
+    command: bash -c "python3 manage.py makemigrations API && python3 manage.py migrate && python3 manage.py collectstatic --noinput && gunicorn RSD.wsgi -b 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://RSD@db:5432/
